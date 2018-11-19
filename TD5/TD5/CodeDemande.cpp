@@ -29,7 +29,7 @@ void ajouterCible(ListeCibles& liste, const Cible& element)
 {
 	if (liste.nbElements < liste.capacite)
 	{
-		liste.elements[liste.nbElements] = element;
+		liste.elements[liste.nbElements-1] = element;
 		liste.nbElements += 1;
 	}
 	// TODO: S'il reste de la place, ajouter l'élément à la fin.
@@ -148,31 +148,77 @@ ListeCibles allouerListe(size_t capacite)
 {
 	// TODO: Créer une 'ListeDonnee' vide (nbElements = 0) avec la capacité donnée.
 	
+	ListeCibles ListeDonnee;
+	ListeDonnee.nbElements = 0;
+	ListeDonnee.capacite = capacite;
+
 	// TODO: Allouer un tableau de 'Cible' de la taille demandée.
-	return {};
+
+	Cible* Tableau; ///initialisation
+	Tableau = new Cible[capacite];
+
+
+	return {ListeDonnee};
 }
 
 
 void desallouerListe(ListeCibles& cibles)
 {
 	// TODO: Désallouer le tableau d'élément.
+
+	delete cibles.elements;
+
 	// TODO: Remettre les membres à zéro.
+	cibles.elements = 0;
+
 }
 
 
 JournalDetection lireJournalDetection(const string& nomFichier, bool& ok)
 {
 	// TODO: Ouvrir un fichier en lecture binaire.
-	
+
+	ifstream source;
+	source.open(nomFichier, ios::binary);
+
 	// TODO: Indiquer la réussite ou l'échec de l'ouverture dans 'ok'.
-	
+
+	if (source.fail)
+	{
+		ok = false;
+	}
+
+	else
+	{
+		ok = true;
+
+
 	// TODO: Lire les paramètres de mission
+
+		JournalDetection journal;
+		source.read((char*)&journal.parametres, sizeof(journal.parametres));
+
+		// TODO: Compter le nombre de cibles dans le fichier.
+		source.seekg(0, ios::end);
+		int nombreCibles;
+		nombreCibles = (source.tellg - sizeof(ParametresMission) / sizeof (Cible));
+		///// maybe its just nombreCibles = (source.tellg - sizeof(journal.parametres)/ sizeof(journal.cibles);
+
+		// TODO: Allouer la liste de cibles avec la bonne capacité.
+
+		ListeCibles nouvelleListe = allouerListe(nombreCibles);
+		// TODO: Lire les cibles.
+
+		lireCibles(source, nouvelleListe);
+	}
 	
-	// TODO: Compter le nombre de cibles dans le fichier.
 	
-	// TODO: Allouer la liste de cibles avec la bonne capacité.
 	
-	// TODO: Lire les cibles.
+	
+	
+	
+	
+	
 	return {};
 }
 

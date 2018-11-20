@@ -29,33 +29,32 @@ void ajouterCible(ListeCibles& liste, const Cible& element) {
 		liste.elements[liste.nbElements - 1] = element;
 		liste.nbElements += 1;
 	}
-	// TODO: S'il reste de la place, ajouter l'élément à la fin.
+	// TODO: S'il reste de la place, ajouter l'élément à la fin. --DONE
 }
 
 
 void retirerCible(ListeCibles& liste, uint32_t id) {
 	for (size_t i = 0; i < liste.nbElements; i++) {
-		if (id == liste.elements[i].id) {
+		if (id == liste.elements[i].id){
 			delete &liste.elements[i];
-			i = liste.nbElements;/// Pour sortir de ma boucle
+			i = liste.nbElements;	/// Pour sortir de ma boucle
 		}
 	}
 
-	// TODO: Rechercher la cible avec le même ID et le retirer de la liste si
+	// TODO: Rechercher la cible avec le même ID et le retirer de la liste si	
 	//       présent. ATTENTION! On parle bien de Cible::id, pas de l'index
-	//       dans le tableau.
+	//       dans le tableau.	--DONE
 }
 
 
 void lireCibles(istream& fichier, ListeCibles& cibles) {
 	// TODO: Tant que la fin de fichier n'est pas atteinte :
 	// TODO: Lire une 'Cible' à partir du ficher à la position
-	//       courante et l'ajouter à la liste.
+	//       courante et l'ajouter à la liste.	--DONE
 	while (fichier.peek() != EOF) {
 		Cible temporaire;
-		fichier.read((char*)&temporaire, sizeof(temporaire));
+		fichier.read((char*)&temporaire, sizeof(temporaire)); 
 		ajouterCible(cibles, temporaire);
-
 	}
 }
 
@@ -63,14 +62,13 @@ void lireCibles(istream& fichier, ListeCibles& cibles) {
 void ecrireCibles(ostream& fichier, const ListeCibles& cibles) {
 	fichier.seekp(0, ios::cur);
 	fichier.write((char*)&cibles.elements, sizeof(cibles.elements));
-
 	// TODO: Écrire tous les éléments de la liste dans le fichier à partir de la position courante.
+	// --DONE
 }
 
 
 void ecrireJournalDetection(const string& nomFichier, const JournalDetection& journal, bool& ok) {
-	// TODO: Ouvrir un fichier en écriture binaire.
-
+	// TODO: Ouvrir un fichier en écriture binaire.	--DONE
 	ofstream destination(nomFichier, ios::binary);
 	destination.open(nomFichier, ios::binary | ios::in);
 

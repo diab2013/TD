@@ -80,6 +80,7 @@ int main() {
 	Cible c11 = { 11, {38.140728, -76.426494}, "Triangle gris, O orange", "cible_11.jpg" };
 
 	// TODO: Lire le journal de détection "Cibles.data".
+	fstream 
 
 	// TODO: Faire la vérification d'erreur et terminer le programme avec un
 	//       message s'il y a erreur.

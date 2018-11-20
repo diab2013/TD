@@ -26,7 +26,7 @@ using namespace std;
 
 void ajouterCible(ListeCibles& liste, const Cible& element) {
 	if (liste.nbElements < liste.capacite) {
-		liste.elements[liste.nbElements - 1] = element;
+		liste.elements[liste.nbElements] = element;
 		liste.nbElements += 1;
 	}
 	// TODO: S'il reste de la place, ajouter l'élément à la fin. --DONE
@@ -69,12 +69,11 @@ void ecrireCibles(ostream& fichier, const ListeCibles& cibles) {
 
 void ecrireJournalDetection(const string& nomFichier, const JournalDetection& journal, bool& ok) {
 	// TODO: Ouvrir un fichier en écriture binaire.	--DONE
-	ofstream destination(nomFichier, ios::binary);
-	destination.open(nomFichier, ios::binary | ios::in);
+	fstream destination;
+	destination.open(nomFichier, ios::binary | ios::out);
 
-	// TODO: Indiquer la réussite ou l'échec de l'ouverture dans 'ok'.
-
-	if (destination.fail) {
+	// TODO: Indiquer la réussite ou l'échec de l'ouverture dans 'ok'. 
+	if (destination.fail()) {
 		ok = false;
 	}
 	// TODO: Écrire les paramètres de mission dans le fichier.
@@ -103,8 +102,7 @@ void ecrireObservation(const string& nomFichier, size_t index, const string& obs
 
 	// TODO: Copier l'observation donnée en paramètre dans la cible.
 	//       Astuce : strcpy()
-
-	strcpy(cibleALire.observation, observation[observation.length]);
+	strcpy_s(cibleALire.observation, (const char*) observation[observation.length()]);
 
 	// TODO: Réécrire la cible (et seulement celle-là) dans le fichier.
 
@@ -146,7 +144,7 @@ JournalDetection lireJournalDetection(const string& nomFichier, bool& ok) {
 
 	// TODO: Indiquer la réussite ou l'échec de l'ouverture dans 'ok'.
 
-	if (source.fail) {
+	if (source.fail()) {
 		ok = false;
 	}
 	else {
@@ -159,7 +157,7 @@ JournalDetection lireJournalDetection(const string& nomFichier, bool& ok) {
 		// TODO: Compter le nombre de cibles dans le fichier.
 		source.seekg(0, ios::end);
 		int nombreCibles;
-		nombreCibles = (source.tellg - sizeof(ParametresMission) / sizeof(Cible));
+		nombreCibles = int(source.tellg() / sizeof(Cible));
 		///// maybe its just nombreCibles = (source.tellg - sizeof(journal.parametres)/ sizeof(journal.cibles);
 
 		// TODO: Allouer la liste de cibles avec la bonne capacité.

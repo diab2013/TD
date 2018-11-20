@@ -22,27 +22,35 @@ using namespace std;
 
 void tests_partie1() {
 	// Dans la partie 1, on déclare une liste de cibles avec un tableau statique, puisque l'allocation dynamique est vue en classe seulement la semaine suivante.
+	//	--DONE
 	Cible tableauCibles[3] = {};
-	ListeCibles cibles = { tableauCibles, 0, size(tableauCibles) };
+	ListeCibles listeCibles = { tableauCibles, 0, size(tableauCibles) };
 
 	//TODO: Ajouter 3 fois une cible (ajouterCible) à la cibles, chacun avec un ID différent (les autres valeurs ne sont pas importantes);
 	//TODO: après chaque ajout vérifier que le nombre de cibles est bon (i.e. 1 après le premier ajout, 2 après le deuxième), et que les données de la cible sont dans la liste (vérifiez uniquement l'ID).
-	//TODO: Ajouter une autre cible, le nombre d'éléments devrait être encore 3 puisque c'est la capacité de la liste.
-
-	for (size_t i = 1; i <= 3; i++) {
-		ajouterCible(cibles, tableauCibles[i]);
-		tableauCibles->id = i;
-		cout << " le nombre de cibles est : " << cibles.nbElements;
+	//TODO: Ajouter une autre cible, le nombre d'éléments devrait être encore 3 puisque c'est la capacité de la liste. -- DONE
+	
+	for (uint32_t i = 1; i <= 3; i++) {
+		Cible cible = { i, 0, '0', '0'};
+		ajouterCible(listeCibles, cible);
+		cout << " le nombre de cibles est : " << listeCibles.nbElements << endl;
 	}
-
+	for (uint32_t i = 0; i < 3; i++) {
+		cout << " id cible :  " << listeCibles.elements[i].id << endl;
+	}
+	
 	//TODO: Retirer la cible (retirerCible) ayant l'ID que vous avez mis en 2e, vérifier qu'il reste 2 éléments aux indices 0 et 1 dont les ID sont les bons.
-
-	fstream fichierTestCibles("fichierTestCibles.bin", ios::in | ios::out | ios::trunc | ios::binary);
+	retirerCible(listeCibles, 2);
+	cout << "cible 1 : " << listeCibles.elements[0].id << endl;
+	cout << "cible 2 : " << listeCibles.elements[1].id << endl;
+	cout << "cible 3 : " << listeCibles.elements[2].id << endl;
+	
 
 	//TODO: Écrire les cibles (ecrireCibles) dans le fichier fichierTestCibles. Vérifier que la tête d'écriture est rendue au bon endroit.
+	fstream fichierTestCibles("fichierTestCibles.bin", ios::in | ios::out | ios::trunc | ios::binary);
 
 	Cible tableauCibles2[3] = {};
-	ListeCibles cibles2 = { tableauCibles2, 0, size(tableauCibles) };
+	ListeCibles listeCibles2 = { tableauCibles2, 0, size(tableauCibles) };
 
 	//TODO: Remettre la tête de lecture au début du fichier puis lire les cibles (lireCibles) dans cibles2. Vérifier que les 2 bonnes cibles y sont.
 
@@ -54,7 +62,6 @@ void tests_partie1() {
 	//TODO: Ajouter une observation (ecrireObservation) au fichier créé ci-dessus à l'indice 1 (deuxième cible).
 	//NOTE: Même chose que ci-dessus: la taille du fichier ne devrait pas avoir changée, et dans l'éditeur binaire vous devriez voir le texte après le deuxième ID.
 
-	//
 }
 
 void tests_partie2() {
@@ -77,10 +84,9 @@ int main() {
 
 	string observation = "Cercle noir, E rouge";
 
-	Cible c11 = { 11, {38.140728, -76.426494}, "Triangle gris, O orange", "cible_11.jpg" };
+	//Cible c11 = { 11, {38.140728, -76.426494}, "Triangle gris, O orange", "cible_11.jpg" };
 
 	// TODO: Lire le journal de détection "Cibles.data".
-	fstream 
 
 	// TODO: Faire la vérification d'erreur et terminer le programme avec un
 	//       message s'il y a erreur.
@@ -102,5 +108,4 @@ int main() {
 
 	// TODO: Faire la vérification d'erreur et terminer le programme avec un
 	//       message s'il y a erreur.
-	return 0;
 }

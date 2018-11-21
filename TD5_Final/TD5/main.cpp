@@ -35,16 +35,12 @@ void tests_partie1() {
 		ajouterCible(cibles, cible);
 		cout << " le nombre de cibles est : " << cibles.nbElements << endl;
 	}
-	for (uint32_t i = 0; i < 3; i++) {
-		cout << " id cible :  " << cibles.elements[i].id << endl;
-	}
+	afficherCibles(cibles);
 	
 	//TODO: Retirer la cible (retirerCible) ayant l'ID que vous avez mis en 2e, vérifier qu'il reste 2 éléments aux indices 0 et 1 dont les ID sont les bons.
 	cout << "cible de ID = 2 a ete enleve!" << endl;
 	retirerCible(cibles, 2);
-	for (uint32_t i = 0; i < cibles.nbElements; i++) {
-		cout << " id cible :  " << cibles.elements[i].id << endl;
-	}
+	afficherCibles(cibles);
 
 	//TODO: Écrire les cibles (ecrireCibles) dans le fichier fichierTestCibles. Vérifier que la tête d'écriture est rendue au bon endroit.
 	fstream fichierTestCibles("fichierTestCibles.bin", ios::in | ios::out | ios::trunc | ios::binary);
@@ -56,13 +52,11 @@ void tests_partie1() {
 	Cible tableauCibles2[3] = {};
 	ListeCibles cibles2 = { tableauCibles2, 0, size(tableauCibles2) };
 	lireCibles(fichierTestCibles, cibles2);
-	for (uint32_t i = 0; i < cibles2.nbElements; i++) {
-		cout << " id cible :  " << cibles2.elements[i].id << endl;
-	}
+	afficherCibles(cibles2);
 
 	//TODO: Créer une variable de type JournalDetection avec des valeurs quelconques et une ListeCibles déjà créé ci-dessus.
 	string nomDuFichier = "FichierTest.bin";
-	JournalDetection journal = { {"Diab", "Notes inutiles", 0}, cibles };
+	JournalDetection journal = { {"Diab", "Notes inutiles", {5}}, cibles };
 	//TODO: Écrire ce journal (ecrireJournalDetection) dans un nouveau fichier binaire.
 	bool ok;
 	ecrireJournalDetection(nomDuFichier, journal, ok);
@@ -73,7 +67,7 @@ void tests_partie1() {
 	//NOTE: La relecture du fichier pour vérifier qu'il est bon se fera seulement dans la partie 2.  Vous pouvez pour l'instant vérifier que la taille du fichier est bonne (propriétés du fichier dans Windows; la "taille" en octets devrait être une taille d'entête plus le bon nombre de cibles; attention de ne pas regarder la "taille sur disque" qui peut être différente de la "taille" dans les propriétés du fichier).  Vous pouvez aussi ouvrir le fichier binaire avec un éditeur binaire (par exemple celui de VisualStudio) pour voir si les ID sont bien dans le fichier.
 
 	//TODO: Ajouter une observation (ecrireObservation) au fichier créé ci-dessus à l'indice 1 (deuxième cible).
-	ecrireObservation(nomDuFichier,(size_t) 1, "Une observation"); //REVOIR!!!!
+	ecrireObservation(nomDuFichier, 1, "Une observation"); //REVOIR!!!!
 	//NOTE: Même chose que ci-dessus: la taille du fichier ne devrait pas avoir changée, et dans l'éditeur binaire vous devriez voir le texte après le deuxième ID.
 
 }
@@ -88,9 +82,7 @@ void tests_partie2() {
 	//TODO: Ajouter une cible la liste; ça devrait fonctionner.
 	Cible cible = {123, 0, 'Test', 'A'};
 	ajouterCible(liste, cible);
-	for (uint32_t i = 0; i < liste.nbElements; i++) {
-		cout << " id cible :  " << liste.elements[i].id << endl;
-	}
+	afficherCibles(liste);
 	//TODO: Conserver le pointeur vers le tableau de cibles dans une variable.
 	Cible** pointeurTemp = &liste.elements;
 	//TODO: Désallouer la liste (desallouerListe); vérifier que les valeurs sont à zéro.
@@ -109,8 +101,8 @@ void tests_partie2() {
 }
 
 int main() {
-	tests_partie1();
-	tests_partie2();
+	//tests_partie1();
+	//tests_partie2();
 
 	const string nomFichierCibles = "Cibles.data";
 	const string nomFichierCiblesFinal = "Cibles_final.data";
@@ -121,29 +113,45 @@ int main() {
 
 	// TODO: Lire le journal de détection "Cibles.data".<
 	bool ok;
-	JournalDetection journal = lireJournalDetection(nomFichierCibles, ok);
+	JournalDetection journal;
+	journal.cibles.capacite = 10;
+	journal = lireJournalDetection(nomFichierCibles, ok);
 	// TODO: Faire la vérification d'erreur et terminer le programme avec un
 	//       message s'il y a erreur.
 	if (!ok) {
 		cout << "Erreur de lecture du journal!" << endl;
-	}
-	else {
+	} else {
 		// TODO: Afficher le journal.  (Devrait afficher un journal avec 10 cibles ayant des données valides.)
-		afficherJournal(journal);
+		//afficherJournal(journal);
 		// TODO: Retirer la cible 5 de la liste du journal.
+		retirerCible(journal.cibles, 5);
 		// TODO: Ajouter la cible 11 (variable 'c11' ci-dessus) à la liste du journal.
+		ajouterCible(journal.cibles, c11);
 		// TODO: Afficher les cibles pour vérifier que les opérations ci-dessus ont bien fonctionnées.
+		afficherCibles(journal.cibles);
 
 		// TODO: Écrire le journal de détection dans "Cibles_final.data".
-
-		// TODO: Écrire l'observation (variable 'observation' ci-dessus) dans la
-		//       deuxième cible du fichier créé ci-dessus.
-
-		// TODO: Lire ce nouveau journal et l'afficher.  Toutes les cibles (autre que la 5 qu'on a enlevée) devrait y être, et la nouvelle observation devrait être sur la deuxième cible (qui a aussi l'ID 2, mais c'est une coïncidence).
-
-		// TODO: Désallouer les deux listes de cibles.
-
-		// TODO: Faire la vérification d'erreur et terminer le programme avec un
-		//       message s'il y a erreur.
+		ecrireJournalDetection(nomFichierCiblesFinal, journal, ok);
+		if (!ok) {
+			cout << "Il y a eu une erreur lors de l'ecriture du journal!" << endl;
+		}
+		else {
+			// TODO: Écrire l'observation (variable 'observation' ci-dessus) dans la
+			//       deuxième cible du fichier créé ci-dessus.
+			ecrireObservation(nomFichierCiblesFinal, 2, observation);
+			// TODO: Lire ce nouveau journal et l'afficher.  Toutes les cibles (autre que la 5 qu'on a enlevée) devrait y être, et la nouvelle observation devrait être sur la deuxième cible (qui a aussi l'ID 2, mais c'est une coïncidence).
+			JournalDetection journal2 = lireJournalDetection(nomFichierCibles, ok);
+			if (!ok) {
+				cout << "Erreur de lecture du journal!" << endl;
+			}
+			else {
+				afficherJournal(journal2);
+				// TODO: Désallouer les deux listes de cibles.
+				desallouerListe(journal.cibles);
+				desallouerListe(journal2.cibles);
+				// TODO: Faire la vérification d'erreur et terminer le programme avec un
+				//       message s'il y a erreur.
+			}
+		}
 	}
 }

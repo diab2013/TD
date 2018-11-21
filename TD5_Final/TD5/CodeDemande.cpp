@@ -1,5 +1,9 @@
 ////////////////////////////////////////////////////////////////////////////////
-/// VOTRE ENTÊTE ICI
+/// \file    CodeDemande.hpp
+/// \author  Diab Khanafer et Abdelrahman Bassiouni
+/// \version 2018-11-20
+///
+/// Contient les fonctions qui nous sont demandées d'écrire et d'utiliser dans main.cpp
 ////////////////////////////////////////////////////////////////////////////////
 
 #pragma region "Inclusions" //{
@@ -98,13 +102,15 @@ void ecrireObservation(const string& nomFichier, size_t index, const string& obs
 	// TODO: Se positionner (têtes de lecture et d'écriture) au début de la cible 
 	//       à l'index donné. On parle ici de l'index dans le fichier, donc 0 est
 	//       la première cible dans le fichier, etc.
-	fichier.seekg(index * sizeof(Cible), ios::beg);
-	fichier.seekp(index * sizeof(Cible), ios::beg);
+	
 
 	// TODO: Lire cette cible.
 	//       ATTENTION! Vous ne devez lire que cette cible isolée, pas tout le
 	//       tableau.
 	Cible cibleALire;
+	
+	fichier.seekg(index * sizeof(cibleALire) + sizeof(ParametresMission), ios::beg);
+	fichier.seekp(index * sizeof(cibleALire) + sizeof(ParametresMission), ios::beg);
 	
 	fichier.read((char*)&cibleALire, sizeof(cibleALire));
 
@@ -113,7 +119,7 @@ void ecrireObservation(const string& nomFichier, size_t index, const string& obs
 	strcpy_s(cibleALire.observation, observation.c_str());
 
 	// TODO: Réécrire la cible (et seulement celle-là) dans le fichier.
-
+	fichier.seekp(index * sizeof(cibleALire) + sizeof(ParametresMission), ios::beg);
 	fichier.write((char*)&cibleALire, sizeof(cibleALire));
 }
 
@@ -138,10 +144,12 @@ ListeCibles allouerListe(size_t capacite) {
 void desallouerListe(ListeCibles& cibles) {
 	// TODO: Désallouer le tableau d'élément.
 
-	delete cibles.elements;
+	delete[] cibles.elements;
 
 	// TODO: Remettre les membres à zéro.
 	cibles.elements = 0;
+	cibles.nbElements = 0;
+	cibles.capacite = 0;
 }
 
 
@@ -158,21 +166,27 @@ JournalDetection lireJournalDetection(const string& nomFichier, bool& ok) {
 		// TODO: Lire les paramètres de mission
 
 		JournalDetection journal;
-		source.read((char*)&journal.parametres, sizeof(journal.parametres));
+		source.seekg(0, ios::beg);
+		source.read((char*)&journal.parametres, sizeof(ParametresMission));
 
 		// TODO: Compter le nombre de cibles dans le fichier.
-		source.seekg(0, ios::end);
-		int nombreCibles;
-		nombreCibles = int(source.tellg() / sizeof(Cible));
-		///nombreCibles = ((int)source.tellg() - sizeof(journal.parametres)) / sizeof(journal.cibles);
+		Cible cible;
+		int nombreCibles = 0;
+		while (source.peek() != EOF) {
+			source.read((char*)&cible, sizeof(cible));
+			nombreCibles++;
+		}
+
+		source.seekg(sizeof(journal.parametres), ios::beg);
 		// TODO: Allouer la liste de cibles avec la bonne capacité.
 		ListeCibles nouvelleListe = allouerListe(nombreCibles);
 		
 		// TODO: Lire les cibles.
+		source.seekg(sizeof(journal.parametres), ios::beg);
 		lireCibles(source, nouvelleListe);
 		return { journal };
 	}
-	return {};
+	return { NULL };
 }
 
 #pragma endregion //}

@@ -1,5 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
-/// VOTRE ENTÊTE ICI
+/// \file    main.cpp
+/// \author  Diab Khanafer et Abdelrahman Bassiouni
+/// \version 2018-11-20
+///
+/// Contient le main du programme ainsi que deux autres méthodes, tests_partie1 et tests_partie2,
+/// qui servent a tester nos méthodes
 ////////////////////////////////////////////////////////////////////////////////
 
 #pragma region "Inclusions" //{
@@ -20,6 +25,9 @@ using namespace std;
 
 #pragma endregion //}
 
+/**
+*  tests_partie1: fonction qui test les fonctions de la premiere partie pour s'assurer qu'elles fonctionnent.
+*/
 void tests_partie1() {
 	// Dans la partie 1, on déclare une liste de cibles avec un tableau statique, puisque l'allocation dynamique est vue en classe seulement la semaine suivante.
 	//	--DONE
@@ -72,6 +80,9 @@ void tests_partie1() {
 
 }
 
+/**
+*  tests_partie2: fonction qui test les fonctions de la premiere partie pour s'assurer qu'elles fonctionnent.
+*/
 void tests_partie2() {
 	cout << endl;
 	cout << "------TEST PARTIE 2------" << endl;

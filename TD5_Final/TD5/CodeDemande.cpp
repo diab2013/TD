@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-/// \file    CodeDemande.hpp
+/// \file    CodeDemande.cpp
 /// \author  Diab Khanafer et Abdelrahman Bassiouni
 /// \version 2018-11-20
 ///
@@ -28,6 +28,11 @@ using namespace std;
 
 #pragma region "Fonctions" //{
 
+/*
+* ajouterCible: fonction qui ajoute une cible dans une liste de cible s'il y a de la place
+*  \param [IN] liste  la liste qui va contenir l'élément cible
+*  \param [IN] element	la cible que la methode ajoute dans la liste
+*/
 void ajouterCible(ListeCibles& liste, const Cible& element) {
 	// TODO: S'il reste de la place, ajouter l'élément à la fin. --DONE
 	if (liste.nbElements < liste.capacite) {
@@ -36,7 +41,11 @@ void ajouterCible(ListeCibles& liste, const Cible& element) {
 	}
 }
 
-
+/*
+* retirerCible: fonction qui retire une certaine cible selon son ID
+*  \param [IN] liste	la liste qui contient toutes les cibles
+*  \param [IN] id	le ID qu'il faudra chercher est retirer de la liste
+*/
 void retirerCible(ListeCibles& liste, uint32_t id) {
 	// TODO: Rechercher la cible avec le même ID et le retirer de la liste si	
 	//       présent. ATTENTION! On parle bien de Cible::id, pas de l'index
@@ -51,7 +60,11 @@ void retirerCible(ListeCibles& liste, uint32_t id) {
 	}
 }
 
-
+/*
+* lireCibles: fonction qui lit toutes les cibles présentes dans un fichier
+*  \param [IN] fichier	le nom du fichier à acceder
+*  \param [IN] cibles	la liste de cibles qui contiendra toutes les cibles qui viennent du fichier
+*/
 void lireCibles(istream& fichier, ListeCibles& cibles) {
 	// TODO: Tant que la fin de fichier n'est pas atteinte :
 	// TODO: Lire une 'Cible' à partir du ficher à la position
@@ -64,7 +77,11 @@ void lireCibles(istream& fichier, ListeCibles& cibles) {
 	}
 }
 
-
+/*
+* ecrireCibles: fonction qui ecrit toutes les cibles d'une liste dans un fichier
+*  \param [IN] fichier	le nom du fichier à acceder
+*  \param [IN] cibles	la liste de cibles qui contient toutes les cibles à écrire dans le fichier
+*/
 void ecrireCibles(ostream& fichier, const ListeCibles& cibles) {
 	// TODO: Écrire tous les éléments de la liste dans le fichier à partir de la position courante.
 	// --DONE
@@ -74,7 +91,12 @@ void ecrireCibles(ostream& fichier, const ListeCibles& cibles) {
 	}
 }
 
-
+/*
+* ecrireJournalDetection: fonction qui ecrit le journal dans un fichier
+*  \param [IN] nomFichier	le nom du fichier dans lequel on écrit
+*  \param [IN] journal	le journal qui contient l'information et qui sera écrit dans le fichier<
+*  \param [OUT] ok		un booléen qui sort true si l'ouverture du fichier a marcher et false si non.
+*/
 void ecrireJournalDetection(const string& nomFichier, const JournalDetection& journal, bool& ok) {
 	// TODO: Ouvrir un fichier en écriture binaire.	--DONE
 	fstream destination;
@@ -94,7 +116,12 @@ void ecrireJournalDetection(const string& nomFichier, const JournalDetection& jo
 	}
 }
 
-
+/*
+* ecrireObservation: fonction qui une nouvelle observation dans un fichier
+*  \param [IN] nomFichier	le nom du fichier dans lequel on écrit
+*  \param [IN] index	l'index de la cible où il faut modifier l'observation
+*  \param [IN] observation	la nouvelle observation qu'il faut écrire
+*/
 void ecrireObservation(const string& nomFichier, size_t index, const string& observation) {
 	// TODO: Ouvrir un fichier en lecture/écriture binaire.
 	fstream fichier;
@@ -123,7 +150,11 @@ void ecrireObservation(const string& nomFichier, size_t index, const string& obs
 	fichier.write((char*)&cibleALire, sizeof(cibleALire));
 }
 
-
+/*
+* allouerListe: fonction qui alloue une capacité a une liste et la retourne
+*  \param [IN] capacite	la capacite de la liste a allouer
+*  \return ListeCibles	variable qui contient un certain nombre de cibles
+*/
 ListeCibles allouerListe(size_t capacite) {
 	// TODO: Créer une 'ListeDonnee' vide (nbElements = 0) avec la capacité donnée.
 
@@ -140,7 +171,10 @@ ListeCibles allouerListe(size_t capacite) {
 	return { ListeDonnee };
 }
 
-
+/*
+* desallouerListe: fonction qui desalloue une liste
+*  \param [IN] cibles	la liste que l'on desalloue et enleve tout l'information dedans
+*/
 void desallouerListe(ListeCibles& cibles) {
 	// TODO: Désallouer le tableau d'élément.
 
@@ -152,7 +186,12 @@ void desallouerListe(ListeCibles& cibles) {
 	cibles.capacite = 0;
 }
 
-
+/*
+* lireJournalDetection: fonction qui lit un journal dans un fichier et stock l'information
+*  \param [IN] nomFichier	le nom du fichier dans lequel on écrit
+*  \param [IN] ok			un booléen qui sort true si l'ouverture du fichier a marcher et false si non.<
+*  \return	JournalDetection	variable qui contient les parametres de mission et la liste de cibles
+*/
 JournalDetection lireJournalDetection(const string& nomFichier, bool& ok) {
 	// TODO: Ouvrir un fichier en lecture binaire.
 	ifstream source;
@@ -184,6 +223,7 @@ JournalDetection lireJournalDetection(const string& nomFichier, bool& ok) {
 		// TODO: Lire les cibles.
 		source.seekg(sizeof(journal.parametres), ios::beg);
 		lireCibles(source, nouvelleListe);
+		journal.cibles = nouvelleListe;
 		return { journal };
 	}
 	return { NULL };

@@ -25,25 +25,26 @@ using namespace std;
 #pragma region "Fonctions" //{
 
 void ajouterCible(ListeCibles& liste, const Cible& element) {
+	// TODO: S'il reste de la place, ajouter l'élément à la fin. --DONE
 	if (liste.nbElements < liste.capacite) {
 		liste.elements[liste.nbElements] = element;
-		liste.nbElements += 1;
+		liste.nbElements++;
 	}
-	// TODO: S'il reste de la place, ajouter l'élément à la fin. --DONE
 }
 
 
 void retirerCible(ListeCibles& liste, uint32_t id) {
-	for (size_t i = 0; i < liste.nbElements; i++) {
-		if (id == liste.elements[i].id){
-			delete &liste.elements[i];
-			i = liste.nbElements;	/// Pour sortir de ma boucle
-		}
-	}
-
 	// TODO: Rechercher la cible avec le même ID et le retirer de la liste si	
 	//       présent. ATTENTION! On parle bien de Cible::id, pas de l'index
 	//       dans le tableau.	--DONE
+	for (size_t i = 0; i < liste.nbElements; i++) {
+		if (liste.elements[i].id == id) {
+			for (size_t j = i; j < liste.nbElements; j++) {
+				liste.elements[j] = liste.elements[j + 1];
+			}
+			liste.nbElements--;
+		}
+	}
 }
 
 
@@ -51,6 +52,7 @@ void lireCibles(istream& fichier, ListeCibles& cibles) {
 	// TODO: Tant que la fin de fichier n'est pas atteinte :
 	// TODO: Lire une 'Cible' à partir du ficher à la position
 	//       courante et l'ajouter à la liste.	--DONE
+	fichier.seekg(0, ios::cur);
 	while (fichier.peek() != EOF) {
 		Cible temporaire;
 		fichier.read((char*)&temporaire, sizeof(temporaire)); 
@@ -60,10 +62,12 @@ void lireCibles(istream& fichier, ListeCibles& cibles) {
 
 
 void ecrireCibles(ostream& fichier, const ListeCibles& cibles) {
-	fichier.seekp(0, ios::cur);
-	fichier.write((char*)&cibles.elements, sizeof(cibles.elements));
 	// TODO: Écrire tous les éléments de la liste dans le fichier à partir de la position courante.
 	// --DONE
+	fichier.seekp(0, ios::cur);
+	for (uint32_t i = 0; i < cibles.nbElements; i++) {
+		fichier.write((char*)&cibles.elements[i], sizeof(cibles.elements[i]));
+	}
 }
 
 
@@ -78,6 +82,7 @@ void ecrireJournalDetection(const string& nomFichier, const JournalDetection& jo
 	}
 	// TODO: Écrire les paramètres de mission dans le fichier.
 	else {
+		ok = true;
 		destination.write((char*)&journal.parametres, sizeof(&journal.parametres));
 
 		// TODO: Écrire les cibles dans le fichier.
@@ -88,21 +93,24 @@ void ecrireJournalDetection(const string& nomFichier, const JournalDetection& jo
 
 void ecrireObservation(const string& nomFichier, size_t index, const string& observation) {
 	// TODO: Ouvrir un fichier en lecture/écriture binaire.
-	fstream fichier(nomFichier, ios::in | ios::out | ios::binary);
+	fstream fichier;
+	fichier.open(nomFichier, ios::in | ios::out | ios::binary);
 	// TODO: Se positionner (têtes de lecture et d'écriture) au début de la cible 
 	//       à l'index donné. On parle ici de l'index dans le fichier, donc 0 est
 	//       la première cible dans le fichier, etc.
-	fichier.seekg(index, ios::beg);
+	fichier.seekg(index * sizeof(Cible), ios::beg);
+	fichier.seekp(index * sizeof(Cible), ios::beg);
 
 	// TODO: Lire cette cible.
 	//       ATTENTION! Vous ne devez lire que cette cible isolée, pas tout le
 	//       tableau.
 	Cible cibleALire;
+	
 	fichier.read((char*)&cibleALire, sizeof(cibleALire));
 
 	// TODO: Copier l'observation donnée en paramètre dans la cible.
 	//       Astuce : strcpy()
-	strcpy_s(cibleALire.observation, (const char*) observation[observation.length()]);
+	strcpy_s(cibleALire.observation, observation.c_str());
 
 	// TODO: Réécrire la cible (et seulement celle-là) dans le fichier.
 
@@ -121,6 +129,7 @@ ListeCibles allouerListe(size_t capacite) {
 
 	Cible* Tableau; ///initialisation
 	Tableau = new Cible[capacite];
+	ListeDonnee.elements = Tableau;
 
 	return { ListeDonnee };
 }
@@ -138,16 +147,13 @@ void desallouerListe(ListeCibles& cibles) {
 
 JournalDetection lireJournalDetection(const string& nomFichier, bool& ok) {
 	// TODO: Ouvrir un fichier en lecture binaire.
-
 	ifstream source;
 	source.open(nomFichier, ios::binary);
 
 	// TODO: Indiquer la réussite ou l'échec de l'ouverture dans 'ok'.
-
 	if (source.fail()) {
 		ok = false;
-	}
-	else {
+	} else {
 		ok = true;
 		// TODO: Lire les paramètres de mission
 
@@ -158,14 +164,13 @@ JournalDetection lireJournalDetection(const string& nomFichier, bool& ok) {
 		source.seekg(0, ios::end);
 		int nombreCibles;
 		nombreCibles = int(source.tellg() / sizeof(Cible));
-		///// maybe its just nombreCibles = (source.tellg - sizeof(journal.parametres)/ sizeof(journal.cibles);
-
+		///nombreCibles = ((int)source.tellg() - sizeof(journal.parametres)) / sizeof(journal.cibles);
 		// TODO: Allouer la liste de cibles avec la bonne capacité.
-
 		ListeCibles nouvelleListe = allouerListe(nombreCibles);
+		
 		// TODO: Lire les cibles.
-
 		lireCibles(source, nouvelleListe);
+		return { journal };
 	}
 	return {};
 }

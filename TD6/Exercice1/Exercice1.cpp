@@ -45,12 +45,53 @@ wstring lireWstring(istream& fichier)
 #pragma endregion//}
 
 //TODO: Une fonction pour ajouter un Film à une ListeFilms, le film existant déjà; on veut uniquement ajouter le pointeur vers le film existant.  Vous pouvez vous inspirer de votre fonction du TD5.  Cette fonction ne doit copier aucun Film ni Acteur, elle doit copier uniquement des pointeurs.
-
+ListeFilms ajouterFilm(ListeFilms *Liste,Film& film)
+{	if (Liste->nElements < Liste->capacite){
+		Liste->elements[Liste->nElements] = &film;
+		Liste->nElements++;
+		return *Liste;
+	}
+	else
+	{	if (Liste->capacite > 0) {
+			ListeFilms* nouvelleListe = new ListeFilms[Liste->capacite * 2];
+			for (int i = 0; i < Liste->capacite; i++){
+				nouvelleListe->elements[i] = Liste->elements[i];
+				nouvelleListe->capacite = Liste->capacite * 2;
+				nouvelleListe->nElements = Liste->nElements;
+			}
+			return *nouvelleListe;
+		}
+		else{
+			Liste->capacite++;
+			ListeFilms* nouvelleListe = new ListeFilms[Liste->capacite * 2];
+			nouvelleListe->capacite = 2;
+			nouvelleListe->elements = 0;
+			return *nouvelleListe;
+		}
+	}
+}
 //TODO: Une fonction pour enlever un Film d'une ListeFilms (enlever le pointeur) sans effacer le film; la fonction prenant en paramètre un pointeur vers le film à enlever.  L'ordre des films dans la liste n'a pas à être conservé.  Encore une fois, vous pouvez vous inspirer de votre fonction du TD5.
-
+void retirerFilm(ListeFilms *Liste, Film *film)
+{	for (size_t i = 0; i < Liste->capacite; i++){	
+	if (film = Liste->elements[i]) {
+			delete [] Liste->elements[i];
+			break;
+		}
+	}
+}
 //TODO: Une fonction pour trouver un Acteur par son nom dans une ListeFilms, qui retourne un pointeur vers l'acteur, ou nullptr si l'acteur n'est pas trouvé.
-
+Acteur* trouverActeur(ListeFilms *Liste, wstring nomActeur)
+{	for (size_t i = 0; i < Liste->nElements; i++){
+		for (size_t j = 0; j < Liste->elements[i]->acteurs.nElements; j++){
+			if (Liste->elements[i]->acteurs.elements[i]->nom == nomActeur) {
+				return Liste->elements[i]->acteurs.elements[i];
+			}
+		}
+	}
+}
 //TODO: Compléter les fonctions pour lire le fichier et créer/allouer une ListeFilms.  La ListeFilms devra être passée entre les fonctions, pour vérifier l'existence d'un Acteur avant de l'allouer à nouveau (cherché par nom en utilisant la fonction ci-dessus).
+
+
 Acteur* lireActeur(istream& fichier)
 {
 	Acteur acteur = {};

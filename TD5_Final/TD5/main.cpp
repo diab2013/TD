@@ -112,7 +112,7 @@ void tests_partie2() {
 }
 
 int main() {
-	//tests_partie1();
+	tests_partie1();
 	//tests_partie2();
 
 	const string nomFichierCibles = "Cibles.data";
@@ -133,7 +133,7 @@ int main() {
 		cout << "Erreur de lecture du journal!" << endl;
 	} else {
 		// TODO: Afficher le journal.  (Devrait afficher un journal avec 10 cibles ayant des données valides.)
-		//afficherJournal(journal);
+		afficherJournal(journal);
 		// TODO: Retirer la cible 5 de la liste du journal.
 		retirerCible(journal.cibles, 5);
 		// TODO: Ajouter la cible 11 (variable 'c11' ci-dessus) à la liste du journal.

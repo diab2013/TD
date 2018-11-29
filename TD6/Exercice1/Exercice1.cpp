@@ -179,7 +179,13 @@ void afficherFilm(Film *film)
 	}
 }
 //TODO: Une fonction pour afficher tous les films d'une ListeFilms.
-
+void afficherToutFilm(ListeFilms *Liste)
+{
+	for (size_t i = 0; i < Liste->nElements; i++)
+	{
+		afficherFilm(Liste->elements[i]);
+	}
+}
 //TODO: Une fonction pour afficher tous les films dans lesquels un acteur joue, prenant en paramètre le nom de l'acteur.  Cette fonction devrait presque uniquement faire des appels aux autres fonctions écrites.  Elle doit se comporter correctement si l'acteur n'existe pas.
 
 void exempleAffichageUnicode()

@@ -113,7 +113,7 @@ Acteur* lireActeur(istream& fichier, ListeFilms *Liste)
 	}
 }
 
-Film* lireFilm(istream& fichier)
+Film* lireFilm(istream& fichier, ListeFilms *Liste)
 {
 	Film film = {};
 	film.titre       = lireWstring(fichier);
@@ -121,9 +121,11 @@ Film* lireFilm(istream& fichier)
 	film.anneeSortie = lireUint16 (fichier);
 	film.recette     = lireUint16 (fichier);
 	film.acteurs.nElements = lireUint8 (fichier);  //NOTE: Vous avez le droit d'allouer d'un coup le tableau pour les acteurs, sans faire de réallocation comme pour ListeFilms.  Vous pouvez aussi copier-coller les fonctions d'allocation de ListeFilms ci-dessus dans des nouvelles fonctions et faire un remplacement de Film par Acteur, pour réutiliser cette réallocation.
+	Acteur* ListeActeur;
+	
 	for (int i = 0; i < film.acteurs.nElements; i++) {
-		lireActeur(fichier); //TODO: Placer l'acteur au bon endroit dans les acteurs du film.
-		//TODO: Ajouter le film aux films dans lesquels l'acteur joue.
+		film.acteurs.elements[i]=lireActeur(fichier, Liste); //TODO: Placer l'acteur au bon endroit dans les acteurs du film.
+		Liste->elements[i]->acteurs.elements[i]->joueDans.elements[] = *film; //TODO: Ajouter le film aux films dans lesquels l'acteur joue.
 	}
 	return {}; //TODO: Retourner le pointeur vers le nouveau film.
 }
@@ -136,11 +138,13 @@ ListeFilms creerListe(string nomFichier)
 	int nElements = lireUint16(fichier);
 
 	//TODO: Créer une liste de films vide.
+	ListeFilms *Liste;
+	Liste = new ListeFilms;
 	for (int i = 0; i < nElements; i++) {
-		lireFilm(fichier); //TODO: Ajouter le film à la liste.
+		lireFilm(fichier, Liste); //TODO: Ajouter le film à la liste.
 	}
 	
-	return {}; //TODO: Retourner la liste de films.
+	return {Liste}; //TODO: Retourner la liste de films.
 }
 
 //TODO: Une fonction pour détruire un film (relâcher toute la mémoire associée à ce film, et les acteurs qui ne jouent plus dans aucun films de la collection).  Noter qu'il faut enleve le film détruit des films dans lesquels jouent les acteurs.  Pour fins de débogage, affichez les noms des acteurs lors de leur destruction.

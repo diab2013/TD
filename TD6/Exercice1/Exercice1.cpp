@@ -17,18 +17,18 @@ using namespace std;
 #pragma endregion//}
 
 //TODO: Mettre les bons types pour le fichier binaire.
-typedef unsigned char UInt8;
-typedef unsigned short UInt16;
+typedef unsigned char UInt8;   //DONE both verified online through sizes explanation
+typedef unsigned short UInt16;   ///DONE
 
 #pragma region "Fonctions de base pour lire le fichier binaire"//{
 
-UInt8 lireUint8(istream& fichier)
+UInt8 lireUint8(istream& fichier)  
 {
 	UInt8 valeur;
 	fichier.read((char*)&valeur, sizeof(valeur));
 	return valeur;
 }
-UInt16 lireUint16(istream& fichier)
+UInt16 lireUint16(istream& fichier)  
 {
 	UInt16 valeur;
 	fichier.read((char*)&valeur, sizeof(valeur));
@@ -44,8 +44,10 @@ wstring lireWstring(istream& fichier)
 
 #pragma endregion//}
 
+
+
 //TODO: Une fonction pour ajouter un Film à une ListeFilms, le film existant déjà; on veut uniquement ajouter le pointeur vers le film existant.  Vous pouvez vous inspirer de votre fonction du TD5.  Cette fonction ne doit copier aucun Film ni Acteur, elle doit copier uniquement des pointeurs.
-ListeFilms ajouterFilm(ListeFilms *Liste,Film& film)
+ListeFilms ajouterFilm(ListeFilms*& Liste,Film& film)
 {	if (Liste->nElements < Liste->capacite){
 		Liste->elements[Liste->nElements] = &film;
 		Liste->nElements++;
@@ -54,25 +56,28 @@ ListeFilms ajouterFilm(ListeFilms *Liste,Film& film)
 	else
 	{	if (Liste->capacite > 0) {
 			ListeFilms* nouvelleListe = new ListeFilms[Liste->capacite * 2];
+			nouvelleListe->capacite = Liste->capacite * 2;
+			nouvelleListe->nElements = Liste->nElements + 1;
 			for (int i = 0; i < Liste->capacite; i++){
 				nouvelleListe->elements[i] = Liste->elements[i];
-				nouvelleListe->capacite = Liste->capacite * 2;
-				nouvelleListe->nElements = Liste->nElements;
 			}
-			return *nouvelleListe;
+			nouvelleListe->elements[Liste->nElements] = &film;
+			return *nouvelleListe;///not sure si je dois delete l'ancienne liste ou pas car elle reste dans la mémoire
 		}
 		else{
 			Liste->capacite++;
 			ListeFilms* nouvelleListe = new ListeFilms[Liste->capacite * 2];
 			nouvelleListe->capacite = 2;
 			nouvelleListe->elements = 0;
+			nouvelleListe->nElements = 0;
+			nouvelleListe->elements[Liste->nElements] = &film;
 			return *nouvelleListe;
 		}
 	}
 }
 //TODO: Une fonction pour enlever un Film d'une ListeFilms (enlever le pointeur) sans effacer le film; la fonction prenant en paramètre un pointeur vers le film à enlever.  L'ordre des films dans la liste n'a pas à être conservé.  Encore une fois, vous pouvez vous inspirer de votre fonction du TD5.
-void retirerFilm(ListeFilms *Liste, Film *film)
-{	for (size_t i = 0; i < Liste->capacite; i++){	
+void retirerFilm(ListeFilms*& Liste, Film*& film)
+{	for (size_t i = 0; i < Liste->nElements; i++){	
 	if (film = Liste->elements[i]) {
 			delete [] Liste->elements[i];
 			break;
@@ -80,24 +85,39 @@ void retirerFilm(ListeFilms *Liste, Film *film)
 	}
 }
 //TODO: Une fonction pour trouver un Acteur par son nom dans une ListeFilms, qui retourne un pointeur vers l'acteur, ou nullptr si l'acteur n'est pas trouvé.
-Acteur* trouverActeur(ListeFilms *Liste, wstring nomActeur)
+Acteur* trouverActeur(ListeFilms*& Liste, wstring nomActeur)
 {	int cheminDeSortie;
 	for (size_t i = 0; i < Liste->nElements; i++){
 		for (size_t j = 0; j < Liste->elements[i]->acteurs.nElements; j++){
-			if (Liste->elements[i]->acteurs.elements[i]->nom == nomActeur) {
+			if (Liste->elements[i]->acteurs.elements[j]->nom == nomActeur) {
 				cheminDeSortie = 1;
-				return Liste->elements[i]->acteurs.elements[i];
+				return Liste->elements[i]->acteurs.elements[j];
 			}
+			if (cheminDeSortie == 1){
+				break;
+			}
+		}
+		if (cheminDeSortie == 1) {
+			break;
 		}
 	}
 	if (cheminDeSortie = 0){
 		return nullptr;
 	}
 }
+
+
+
+
+
+///////////////////////////////////////DOOOOOOOONNNNNNEEEE///////////////////////////
+
+
+
 //TODO: Compléter les fonctions pour lire le fichier et créer/allouer une ListeFilms.  La ListeFilms devra être passée entre les fonctions, pour vérifier l'existence d'un Acteur avant de l'allouer à nouveau (cherché par nom en utilisant la fonction ci-dessus).
 
 
-Acteur* lireActeur(istream& fichier, ListeFilms *Liste)
+Acteur* lireActeur(istream& fichier, ListeFilms*& Liste)
 {
 	Acteur acteur = {};
 	acteur.nom = lireWstring(fichier);
@@ -113,7 +133,7 @@ Acteur* lireActeur(istream& fichier, ListeFilms *Liste)
 	}
 }
 
-Film* lireFilm(istream& fichier, ListeFilms *Liste)
+Film* lireFilm(istream& fichier, ListeFilms*& Liste)
 {
 	Film film = {};
 	film.titre       = lireWstring(fichier);
@@ -148,7 +168,7 @@ ListeFilms creerListe(string nomFichier)
 }
 
 //TODO: Une fonction pour détruire un film (relâcher toute la mémoire associée à ce film, et les acteurs qui ne jouent plus dans aucun films de la collection).  Noter qu'il faut enleve le film détruit des films dans lesquels jouent les acteurs.  Pour fins de débogage, affichez les noms des acteurs lors de leur destruction.
-void detruireFilm(ListeFilms *Liste, Film *film)
+void detruireFilm(ListeFilms*& Liste, Film*& film)
 {
 	for (size_t i = 0; i < Liste->nElements; i++){
 		if (Liste->elements[i] == film){
@@ -187,7 +207,10 @@ void afficherToutFilm(ListeFilms *Liste)
 	}
 }
 //TODO: Une fonction pour afficher tous les films dans lesquels un acteur joue, prenant en paramètre le nom de l'acteur.  Cette fonction devrait presque uniquement faire des appels aux autres fonctions écrites.  Elle doit se comporter correctement si l'acteur n'existe pas.
-
+void afficherFilmActeur(wstring nomActeur)
+{
+	trouverActeur(nomActeur,)
+}
 void exempleAffichageUnicode()
 {
 	// Après avoir initialisé Unicode, vous devez absolument utiliser wcin/wcout au lieu de cin/cout.  L'utilisation de cin/cout vous donnera une erreur de "symbole ambigu".

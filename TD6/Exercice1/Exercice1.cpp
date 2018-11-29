@@ -171,7 +171,13 @@ void afficherActeur(const Acteur& acteur)
 }
 
 //TODO: Une fonction pour afficher un film avec tous ces acteurs (en utilisant la fonction afficherActeur ci-dessus).
-
+void afficherFilm(Film *film)
+{
+	for (size_t i = 0; i < film->acteurs.nElements; i++)
+	{
+		afficherActeur(*film->acteurs.elements[i]);
+	}
+}
 //TODO: Une fonction pour afficher tous les films d'une ListeFilms.
 
 //TODO: Une fonction pour afficher tous les films dans lesquels un acteur joue, prenant en paramètre le nom de l'acteur.  Cette fonction devrait presque uniquement faire des appels aux autres fonctions écrites.  Elle doit se comporter correctement si l'acteur n'existe pas.

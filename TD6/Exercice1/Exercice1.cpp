@@ -81,24 +81,36 @@ void retirerFilm(ListeFilms *Liste, Film *film)
 }
 //TODO: Une fonction pour trouver un Acteur par son nom dans une ListeFilms, qui retourne un pointeur vers l'acteur, ou nullptr si l'acteur n'est pas trouvé.
 Acteur* trouverActeur(ListeFilms *Liste, wstring nomActeur)
-{	for (size_t i = 0; i < Liste->nElements; i++){
+{	int cheminDeSortie;
+	for (size_t i = 0; i < Liste->nElements; i++){
 		for (size_t j = 0; j < Liste->elements[i]->acteurs.nElements; j++){
 			if (Liste->elements[i]->acteurs.elements[i]->nom == nomActeur) {
+				cheminDeSortie = 1;
 				return Liste->elements[i]->acteurs.elements[i];
 			}
 		}
+	}
+	if (cheminDeSortie = 0){
+		return nullptr;
 	}
 }
 //TODO: Compléter les fonctions pour lire le fichier et créer/allouer une ListeFilms.  La ListeFilms devra être passée entre les fonctions, pour vérifier l'existence d'un Acteur avant de l'allouer à nouveau (cherché par nom en utilisant la fonction ci-dessus).
 
 
-Acteur* lireActeur(istream& fichier)
+Acteur* lireActeur(istream& fichier, ListeFilms *Liste)
 {
 	Acteur acteur = {};
-	acteur.nom            = lireWstring(fichier);
-	acteur.anneeNaissance = lireUint16 (fichier);
-	acteur.sexe           = lireUint8  (fichier);
-	return {}; //TODO: Retourner un pointeur soit vers un acteur existant ou un nouvel acteur ayant les bonnes informations, selon si l'acteur existait déjà.  Pour fins de débogage, affichez les noms des acteurs crées; vous ne devriez pas voir le même nom d'acteur affiché deux fois pour la création.
+	acteur.nom = lireWstring(fichier);
+	acteur.anneeNaissance = lireUint16(fichier);
+	acteur.sexe = lireUint8(fichier);
+	trouverActeur(Liste, acteur.nom);
+
+	if (trouverActeur(Liste, acteur.nom) != nullptr) {
+		return  trouverActeur(Liste, acteur.nom);
+	}
+	else {
+		return {&acteur}; //TODO: Retourner un pointeur soit vers un acteur existant ou un nouvel acteur ayant les bonnes informations, selon si l'acteur existait déjà.  Pour fins de débogage, affichez les noms des acteurs crées; vous ne devriez pas voir le même nom d'acteur affiché deux fois pour la création.
+	}
 }
 
 Film* lireFilm(istream& fichier)

@@ -75,10 +75,41 @@ ListeFilms ajouterFilm(ListeFilms*& Liste,Film& film)
 		}
 	}
 }
+
+ListeActeurs ajouterActeur(ListeActeurs*& Liste,  Acteur& acteur) //// fonction que j ai fait pr faciliter le TD
+{
+	if (Liste->nElements < Liste->capacite) {
+		Liste->elements[Liste->nElements] = &acteur;
+		Liste->nElements++;
+		return *Liste;
+	} 
+	else
+	{
+		if (Liste->capacite > 0) {
+			ListeActeurs* nouvelleListe = new ListeActeurs[Liste->capacite * 2];
+			nouvelleListe->capacite = Liste->capacite * 2;
+			nouvelleListe->nElements = Liste->nElements + 1;
+			for (int i = 0; i < Liste->capacite; i++) {
+				nouvelleListe->elements[i] = Liste->elements[i];
+			}
+			nouvelleListe->elements[Liste->nElements] = &acteur;
+			return *nouvelleListe;///not sure si je dois delete l'ancienne liste ou pas car elle reste dans la mémoire
+		}
+		else {
+			Liste->capacite++;
+			ListeActeurs* nouvelleListe = new ListeActeurs[Liste->capacite * 2];
+			nouvelleListe->capacite = 2;
+			nouvelleListe->elements = 0;
+			nouvelleListe->nElements = 0;
+			nouvelleListe->elements[Liste->nElements] = &acteur;
+			return *nouvelleListe;
+		}
+	}
+} 
 //TODO: Une fonction pour enlever un Film d'une ListeFilms (enlever le pointeur) sans effacer le film; la fonction prenant en paramètre un pointeur vers le film à enlever.  L'ordre des films dans la liste n'a pas à être conservé.  Encore une fois, vous pouvez vous inspirer de votre fonction du TD5.
 void retirerFilm(ListeFilms*& Liste, Film*& film)
 {	for (size_t i = 0; i < Liste->nElements; i++){	
-	if (film = Liste->elements[i]) {
+	if (film == Liste->elements[i]) {
 			delete [] Liste->elements[i];
 			break;
 		}
@@ -105,19 +136,9 @@ Acteur* trouverActeur(ListeFilms*& Liste, wstring nomActeur)
 		return nullptr;
 	}
 }
-
-
-
-
-
-///////////////////////////////////////DOOOOOOOONNNNNNEEEE///////////////////////////
-
-
-
 //TODO: Compléter les fonctions pour lire le fichier et créer/allouer une ListeFilms.  La ListeFilms devra être passée entre les fonctions, pour vérifier l'existence d'un Acteur avant de l'allouer à nouveau (cherché par nom en utilisant la fonction ci-dessus).
 
-
-Acteur* lireActeur(istream& fichier, ListeFilms*& Liste)
+Acteur* lireActeur(istream& fichier, ListeFilms*& Liste, ListeActeurs*& ListeActeur)
 {
 	Acteur acteur = {};
 	acteur.nom = lireWstring(fichier);
@@ -129,58 +150,89 @@ Acteur* lireActeur(istream& fichier, ListeFilms*& Liste)
 		return  trouverActeur(Liste, acteur.nom);
 	}
 	else {
+		ajouterActeur(ListeActeur, acteur);
 		return {&acteur}; //TODO: Retourner un pointeur soit vers un acteur existant ou un nouvel acteur ayant les bonnes informations, selon si l'acteur existait déjà.  Pour fins de débogage, affichez les noms des acteurs crées; vous ne devriez pas voir le même nom d'acteur affiché deux fois pour la création.
 	}
 }
 
-Film* lireFilm(istream& fichier, ListeFilms*& Liste)
+
+
+
+
+
+
+
+
+
+
+
+///////////////////////////////////////DOOOOOOOONNNNNNEEEE///////////////////////////
+
+Film* lireFilm(istream& fichier, ListeFilms*& Liste, ListeActeurs*& ListeActeur)
 {
 	Film film = {};
-	film.titre       = lireWstring(fichier);
+	film.titre = lireWstring(fichier);
 	film.realisateur = lireWstring(fichier);
-	film.anneeSortie = lireUint16 (fichier);
-	film.recette     = lireUint16 (fichier);
-	film.acteurs.nElements = lireUint8 (fichier);  //NOTE: Vous avez le droit d'allouer d'un coup le tableau pour les acteurs, sans faire de réallocation comme pour ListeFilms.  Vous pouvez aussi copier-coller les fonctions d'allocation de ListeFilms ci-dessus dans des nouvelles fonctions et faire un remplacement de Film par Acteur, pour réutiliser cette réallocation.
-	Acteur* ListeActeur;
-	
+	film.anneeSortie = lireUint16(fichier);
+	film.recette = lireUint16(fichier);
+	film.acteurs.nElements = lireUint8(fichier);  //NOTE: Vous avez le droit d'allouer d'un coup le tableau pour les acteurs, sans faire de réallocation comme pour ListeFilms.  Vous pouvez aussi copier-coller les fonctions d'allocation de ListeFilms ci-dessus dans des nouvelles fonctions et faire un remplacement de Film par Acteur, pour réutiliser cette réallocation.
+	 //TODO: Placer l'acteur au bon endroit dans les acteurs du film.
+	ajouterFilm(Liste, film);
 	for (int i = 0; i < film.acteurs.nElements; i++) {
-		film.acteurs.elements[i]=lireActeur(fichier, Liste); //TODO: Placer l'acteur au bon endroit dans les acteurs du film.
-		Liste->elements[i]->acteurs.elements[i]->joueDans.elements[] = *film; //TODO: Ajouter le film aux films dans lesquels l'acteur joue.
-	}
-	return {}; //TODO: Retourner le pointeur vers le nouveau film.
-}
+		Liste->elements[Liste->nElements]->acteurs.elements[i] = lireActeur(fichier, Liste, ListeActeur);
+		//TODO: Ajouter le film aux films dans lesquels l'acteur joue.
+		Liste->elements[Liste->nElements]->acteurs.elements[i]->joueDans.elements[Liste->elements[Liste->nElements]->acteurs.elements[i]->joueDans.nElements] = &film;
 
-ListeFilms creerListe(string nomFichier)
+	}
+	return { Liste->elements[Liste->nElements] }; //TODO: Retourner le pointeur vers le nouveau film.
+}
+ListeFilms creerListe(string nomFichier, Film film)
 {
 	ifstream fichier(nomFichier, ios::binary);
 	fichier.exceptions(ios::failbit);
-	
 	int nElements = lireUint16(fichier);
-
 	//TODO: Créer une liste de films vide.
-	ListeFilms *Liste;
-	Liste = new ListeFilms;
+	ListeFilms* Liste;
+	Liste = new ListeFilms[nElements];
+	//TODO: Ajouter le film à la liste.
 	for (int i = 0; i < nElements; i++) {
-		lireFilm(fichier, Liste); //TODO: Ajouter le film à la liste.
+		ajouterFilm(Liste, film);
 	}
-	
-	return {Liste}; //TODO: Retourner la liste de films.
+	return {*Liste}; //TODO: Retourner la liste de films.
 }
 
 //TODO: Une fonction pour détruire un film (relâcher toute la mémoire associée à ce film, et les acteurs qui ne jouent plus dans aucun films de la collection).  Noter qu'il faut enleve le film détruit des films dans lesquels jouent les acteurs.  Pour fins de débogage, affichez les noms des acteurs lors de leur destruction.
 void detruireFilm(ListeFilms*& Liste, Film*& film)
-{
+{	
+	bool vide = true;
+	bool fini = false;
 	for (size_t i = 0; i < Liste->nElements; i++){
 		if (Liste->elements[i] == film){
 			delete[] Liste->elements[i];
+			for (size_t j = 0; j < film->acteurs.nElements; j++) {
+				for (size_t k = 0; j < film->acteurs.elements[j]->joueDans.nElements; k++){
+					if (film->acteurs.elements[j]->joueDans.elements[k] != nullptr) {
+						vide = false;
+						break;
+					}
+					if (vide == true&& fini == true) {
+						delete[] film->acteurs.elements[j];
+					}
+					if (k = film->acteurs.elements[j]->joueDans.nElements){
+						fini = true;
+					}
+				}
+			}
+			break;
 		}
+		break;
 	}
 }
 //TODO: Une fonction pour détruire une ListeFilms et tous les films qu'elle contient.
 void detruireListeFilms(ListeFilms *Liste)
 {
-	for (int i = 0; i < Liste->nElements; i++){
-		delete[] Liste->elements[i];
+	for (size_t i = 0; i < Liste->nElements; i++){
+		detruireFilm(Liste, Liste->elements[i]);
 	}
 	delete[] Liste;
 }
@@ -199,17 +251,15 @@ void afficherFilm(Film *film)
 	}
 }
 //TODO: Une fonction pour afficher tous les films d'une ListeFilms.
-void afficherToutFilm(ListeFilms *Liste)
-{
-	for (size_t i = 0; i < Liste->nElements; i++)
-	{
+void afficherToutFilm(ListeFilms* Liste)
+{	for (size_t i = 0; i < Liste->nElements; i++){
 		afficherFilm(Liste->elements[i]);
 	}
 }
 //TODO: Une fonction pour afficher tous les films dans lesquels un acteur joue, prenant en paramètre le nom de l'acteur.  Cette fonction devrait presque uniquement faire des appels aux autres fonctions écrites.  Elle doit se comporter correctement si l'acteur n'existe pas.
-void afficherFilmActeur(wstring nomActeur)
+void afficherFilmActeur(ListeFilms*& Liste,wstring nomActeur)
 {
-	trouverActeur(nomActeur,)
+	afficherToutFilm(&(trouverActeur(Liste, nomActeur)->joueDans));
 }
 void exempleAffichageUnicode()
 {

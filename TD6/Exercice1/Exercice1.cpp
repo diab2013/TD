@@ -156,18 +156,6 @@ Acteur* lireActeur(istream& fichier, ListeFilms*& Liste, ListeActeurs*& ListeAct
 }
 
 
-
-
-
-
-
-
-
-
-
-
-///////////////////////////////////////DOOOOOOOONNNNNNEEEE///////////////////////////
-
 Film* lireFilm(istream& fichier, ListeFilms*& Liste, ListeActeurs*& ListeActeur)
 {
 	Film film = {};
@@ -261,6 +249,20 @@ void afficherFilmActeur(ListeFilms*& Liste,wstring nomActeur)
 {
 	afficherToutFilm(&(trouverActeur(Liste, nomActeur)->joueDans));
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+///////////////////////////////////////DOOOOOOOONNNNNNEEEE///////////////////////////
 void exempleAffichageUnicode()
 {
 	// Après avoir initialisé Unicode, vous devez absolument utiliser wcin/wcout au lieu de cin/cout.  L'utilisation de cin/cout vous donnera une erreur de "symbole ambigu".

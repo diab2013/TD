@@ -55,7 +55,7 @@ string int2dec(int decimal){
 	string temp = "";
 	for (int i = resultat.size() - 1; i >= 0; i--) {
 		temp += resultat[i];
-	}
+	}	
 	resultat = temp;
 	return { resultat };
 }

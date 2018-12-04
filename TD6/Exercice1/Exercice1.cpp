@@ -60,8 +60,6 @@ void ajouterFilm(ListeFilms& Liste, Film* film){
 	Liste.elements[Liste.nElements++] = film;
 }
 	
-	
-
 void ajouterActeur(ListeActeurs& Liste, Acteur* acteur){ //// fonction que j ai fait pr faciliter le TD	
 	if (Liste.capacite == 0) {
 		Liste.capacite++;
@@ -139,8 +137,8 @@ Film* lireFilm(istream& fichier, ListeFilms& Liste, ListeActeurs& ListeActeur)
 	}
 	return { Liste.elements[Liste.nElements] }; //TODO: Retourner le pointeur vers le nouveau film.
 }
-ListeFilms creerListe(const string& nomFichier, Film& film)
-{	ifstream fichier(nomFichier, ios::binary);
+ListeFilms creerListe(const string& nomFichier, Film& film){
+	ifstream fichier(nomFichier, ios::binary);
 	fichier.exceptions(ios::failbit);
 	int nElements = lireUint16(fichier);
 	//TODO: Créer une liste de films vide.
@@ -150,7 +148,7 @@ ListeFilms creerListe(const string& nomFichier, Film& film)
 	for (int i = 0; i < nElements; i++) {
 		ajouterFilm(Liste, &film);
 	}
-	return {Liste}; //TODO: Retourner la liste de films.
+	return { Liste }; //TODO: Retourner la liste de films.
 }
 
 //TODO: Une fonction pour détruire un film (relâcher toute la mémoire associée à ce film, et les acteurs qui ne jouent plus dans aucun films de la collection).  Noter qu'il faut enleve le film détruit des films dans lesquels jouent les acteurs.  Pour fins de débogage, affichez les noms des acteurs lors de leur destruction.
@@ -170,7 +168,7 @@ void detruireFilm(ListeFilms& Liste, Film*& film)
 					if (vide == true&& fini == true) {
 						delete[] film->acteurs.elements[j];
 					}
-					if (k = film->acteurs.elements[j]->joueDans.nElements){
+					if (k == film->acteurs.elements[j]->joueDans.nElements){
 						fini = true;
 					}
 				}
@@ -213,12 +211,6 @@ void afficherFilmActeur(ListeFilms& Liste,wstring nomActeur)
 {
 	afficherToutFilm((trouverActeur(Liste, nomActeur)->joueDans));
 }
-
-
-
-
-
-
 
 ///////////////////////////////////////DOOOOOOOONNNNNNEEEE///////////////////////////
 void exempleAffichageUnicode()

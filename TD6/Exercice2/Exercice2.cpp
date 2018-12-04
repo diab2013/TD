@@ -15,7 +15,7 @@ void afficherTexte(const string& texte){
 //TODO: Fonction dec2int.
 long long dec2int(string texte) {
 	int taille = texte.length();
-	int numero = 0, j = 1;
+	int numero = 0;
 	for (int i = 0; i < taille; i++) {
 		numero += (texte[i] - 48) * pow(10.0, taille - i - 1);
 	}
@@ -28,7 +28,7 @@ int hex2int(string texte){
 	int base = 1, decimal = 0;
 	for (int i = 0; i < taille; i++) {
 		if (texte[i] >= '0' && texte[i] <= '9') {
-			decimal += (texte[i] - 48)*pow(16, taille - i - 1);
+			decimal += (texte[i] - 48) * pow(16, taille - i - 1);
 		} else if (texte[i] >= 'A' && texte[i] <= 'F') {
 			decimal += (texte[i] - 55)*pow(16, taille - i - 1);
 		}
@@ -57,14 +57,10 @@ string int2dec(int decimal){
 		temp += resultat[i];
 	}
 	resultat = temp;
-	return(resultat);
+	return { resultat };
 }
 
-
-
-
-int main()
-{
+int main(){
 	afficherTexte("Entrer un nombre decimal: ");
 	//TODO: Lire l'entrée en utilisant lireEntree.
 	string decimal = lireEntree();
